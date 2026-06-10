@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2f6fed" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>双人学习计划</title>
+    <style>
+      :root {
+        --ink: #172033;
+        --muted: #667085;
+        --line: #dbe3ef;
+        --surface: #ffffff;
+        --soft: #f5f8fc;
+        --blue: #2f6fed;
+        --blue-soft: #eef4ff;
+        --green: #21a67a;
+        --green-soft: #eaf8f2;
+        --orange: #ef8a3a;
+        --orange-soft: #fff3e8;
+        --red: #d64545;
+        --shadow: 0 18px 50px rgba(22, 35, 60, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--soft);
+        color: var(--ink);
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        letter-spacing: 0;
+      }
+      button, input, select, textarea { font: inherit; }
+      button { cursor: pointer; }
+      img { display: block; max-width: 100%; }
+      .hidden { display: none !important; }
+      .muted { color: var(--muted); }
+      .eyebrow {
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 800;
+        margin: 0 0 8px;
+      }
+
+      .entry {
+        display: grid;
+        gap: 28px;
+        grid-template-columns: minmax(300px, 0.9fr) minmax(340px, 1fr);
+        margin: 0 auto;
+        max-width: 1200px;
+        min-height: 100vh;
+        padding: 28px;
+      }
+      .entry-copy { align-self: center; }
+      .entry h1 {
+        font-size: 52px;
+        line-height: 1.08;
+        margin: 0 0 16px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.75;
+        margin: 0 0 20px;
+        max-width: 650px;
+      }
+      .join {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: grid;
+        gap: 14px;
+        max-width: 500px;
+        padding: 18px;
+      }
+      .entry-media {
+        align-self: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        min-height: 520px;
+        overflow: hidden;
+      }
+      .entry-media img {
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
+      }
+
+      label {
+        color: var(--muted);
+        display: grid;
+        font-size: 13px;
+        font-weight: 800;
+        gap: 7px;
+      }
+      input, select, textarea {
+        background: #fbfcff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink);
+        min-height: 44px;
+        padding: 10px 12px;
+        width: 100%;
+      }
+      textarea {
+        min-height: 86px;
+        resize: vertical;
+      }
+      input[type="range"] { padding: 0; }
+      .primary, .ghost, .danger, .icon-button, .chip {
+        align-items: center;
+        border-radius: 8px;
+        display: inline-flex;
+        gap: 8px;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 13px;
+      }
+      .primary {
+        background: var(--blue);
+        border: 0;
+        color: #fff;
+        font-weight: 800;
+      }
+      .ghost, .icon-button, .chip {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        color: var(--ink);
+      }
+      .danger {
+        background: #fff5f5;
+        border: 1px solid #ffd0d0;
+        color: var(--red);
+      }
+      .chip.active, .ghost.active {
+        background: var(--blue-soft);
+        border-color: #cfe0ff;
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 270px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+      .side {
+        background: var(--surface);
+        border-right: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        height: 100vh;
+        padding: 22px;
+        position: sticky;
+        top: 0;
+      }
+      .brand, .sync, .row-title, .top, .actions, .member-list {
+        align-items: center;
+        display: flex;
+        gap: 12px;
+      }
+      .mark, .dot {
+        align-items: center;
+        background: var(--blue-soft);
+        border-radius: 8px;
+        color: var(--blue);
+        display: flex;
+        flex: 0 0 auto;
+        font-weight: 900;
+        height: 42px;
+        justify-content: center;
+        width: 42px;
+      }
+      .brand span, .sync span, .row-title span { color: var(--muted); font-size: 13px; }
+      .nav { display: grid; gap: 8px; }
+      .nav button {
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        color: var(--ink);
+        min-height: 42px;
+        padding: 0 12px;
+        text-align: left;
+      }
+      .nav button.active {
+        background: var(--blue-soft);
+        border-color: #cfe0ff;
+        color: var(--blue);
+        font-weight: 800;
+      }
+      .sync {
+        background: #f7fafc;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-top: auto;
+        padding: 12px;
+      }
+      .main { min-width: 0; padding: 26px; }
+      .top {
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .top h2 {
+        font-size: 30px;
+        margin: 0;
+      }
+      .actions { flex-wrap: wrap; justify-content: flex-end; }
+      .member-list {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 4px;
+      }
+      .member-list button {
+        background: transparent;
+        border: 0;
+        border-radius: 6px;
+        min-height: 34px;
+        padding: 0 10px;
+      }
+      .member-list button.active {
+        background: var(--blue-soft);
+        color: var(--blue);
+        font-weight: 800;
+      }
+      .notice {
+        border-radius: 8px;
+        display: none;
+        font-weight: 800;
+        margin-bottom: 16px;
+        padding: 12px 14px;
+      }
+      .notice.show { display: block; }
+      .notice.ok { background: var(--green-soft); color: var(--green); }
+      .notice.bad { background: #fff5f5; color: var(--red); }
+
+      .view { display: grid; gap: 16px; }
+      .hero {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        overflow: hidden;
+        padding: 22px;
+      }
+      .hero h3 {
+        font-size: 28px;
+        line-height: 1.25;
+        margin: 0 0 10px;
+      }
+      .hero p { color: var(--muted); line-height: 1.7; margin: 0; }
+      .hero img {
+        border-radius: 8px;
+        height: 210px;
+        object-fit: cover;
+        width: 100%;
+      }
+      .metrics, .grid-2, .cards {
+        display: grid;
+        gap: 14px;
+      }
+      .metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric, .panel, .card, .form {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+      .metric {
+        display: grid;
+        gap: 8px;
+        min-height: 104px;
+        padding: 18px;
+      }
+      .metric span { color: var(--muted); font-size: 13px; }
+      .metric strong { font-size: 25px; }
+      .panel, .card, .form { padding: 18px; }
+      .panel-head {
+        align-items: center;
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .panel-head h3, .form h3, .card h3 { margin: 0; }
+      .list { display: grid; gap: 10px; }
+      .empty {
+        background: #f8fafc;
+        border: 1px dashed #cad5e5;
+        border-radius: 8px;
+        color: var(--muted);
+        padding: 16px;
+        text-align: center;
+      }
+      .row {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 42px minmax(0, 1fr) auto;
+        min-height: 66px;
+        padding: 12px;
+      }
+      .row strong { display: block; margin-bottom: 4px; }
+      .row small { color: var(--muted); line-height: 1.5; }
+      .row.done strong {
+        color: var(--muted);
+        text-decoration: line-through;
+      }
+      .row-actions {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .form { display: grid; gap: 12px; }
+      .edit-form {
+        display: grid;
+        gap: 10px;
+      }
+      .edit-row {
+        align-items: start;
+      }
+      .form-row {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .toolbar {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .toolbar input[type="search"] {
+        max-width: 220px;
+        min-width: 160px;
+      }
+      .tag {
+        border-radius: 999px;
+        color: #fff;
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 5px 9px;
+      }
+      .tag.kaoyan { background: var(--blue); }
+      .tag.final { background: var(--orange); }
+      .bar {
+        background: #edf1f7;
+        border-radius: 999px;
+        height: 9px;
+        overflow: hidden;
+      }
+      .bar span {
+        background: linear-gradient(90deg, var(--blue), var(--green));
+        display: block;
+        height: 100%;
+      }
+      .week-chart {
+        align-items: end;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        min-height: 170px;
+      }
+      .week-day {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+        text-align: center;
+      }
+      .week-bar {
+        align-items: end;
+        background: #edf1f7;
+        border-radius: 8px;
+        display: flex;
+        height: 104px;
+        overflow: hidden;
+      }
+      .week-bar span {
+        background: var(--blue);
+        display: block;
+        width: 100%;
+      }
+      .week-day strong { font-size: 13px; }
+      .week-day small {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .completion-grid, .completion-item {
+        display: grid;
+        gap: 12px;
+      }
+      .progress-edit {
+        align-items: center;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: minmax(0, 1fr) 54px;
+      }
+      .mini-stats {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .mini {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .mini span { color: var(--muted); display: block; font-size: 12px; margin-bottom: 6px; }
+      .mini strong { font-size: 20px; }
+
+      @media (max-width: 1050px) {
+        .entry, .app, .hero, .grid-2 { grid-template-columns: 1fr; }
+        .side { height: auto; position: static; }
+        .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 700px) {
+        .entry, .main, .side { padding: 16px; }
+        .entry-media { min-height: 280px; }
+        .entry h1 { font-size: 36px; }
+        .top, .actions { align-items: stretch; flex-direction: column; }
+        .member-list { overflow-x: auto; }
+        .metrics, .cards, .form-row, .mini-stats { grid-template-columns: 1fr; }
+        .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .row { grid-template-columns: 42px minmax(0, 1fr); }
+        .row-actions { grid-column: 1 / -1; justify-content: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="entry" id="entry">
+      <div class="entry-copy">
+        <p class="eyebrow">真实共享版</p>
+        <h1>把考研和期末复习，放进同一个清晰节奏里。</h1>
+        <p class="lead">输入同一个邀请码加入学习组。计划、任务、打卡和预约会保存到运行这个网站的服务器；部署到公网后，任何人打开同一个网址都能同步。</p>
+        <form class="join" id="joinForm">
+          <label>邀请码 <input id="invite" value="KAOYAN-2026" autocomplete="off" /></label>
+          <label>昵称 <input id="nickname" value="我" autocomplete="name" /></label>
+          <button class="primary" type="submit">进入学习组</button>
+          <p class="muted">双击 start-anyone-can-use.cmd 可生成临时公网地址；长期稳定网址请按 PUBLIC_DEPLOYMENT.md 部署。</p>
+          <p class="notice bad show hidden" id="joinError"></p>
+        </form>
+      </div>
+      <div class="entry-media"><img src="/study-room.png" alt="整洁的学习桌面" /></div>
+    </section>
+
+    <section class="app hidden" id="app">
+      <aside class="side">
+        <div class="brand">
+          <div class="mark">研</div>
+          <div><strong>双人学习计划</strong><span id="inviteLabel"></span></div>
+        </div>
+        <nav class="nav" id="nav"></nav>
+        <div class="sync">
+          <div class="mark">同</div>
+          <div><strong id="syncLabel">已连接</strong><span>服务器端保存，自动刷新</span></div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="top">
+          <div><p class="eyebrow" id="dateLabel"></p><h2 id="title">总览</h2></div>
+          <div class="actions">
+            <div class="member-list" id="members"></div>
+            <button class="ghost" id="refreshBtn" type="button">刷新</button>
+            <button class="ghost" id="shareBtn" type="button">分享链接</button>
+            <button class="ghost" id="exportBtn" type="button">导出</button>
+            <button class="ghost" id="importBtn" type="button">导入</button>
+            <button class="ghost" id="switchBtn" type="button">切换小组</button>
+            <input class="hidden" id="importFile" type="file" accept="application/json" />
+          </div>
+        </header>
+        <div class="notice" id="notice"></div>
+        <div class="view" id="view"></div>
+      </main>
+    </section>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

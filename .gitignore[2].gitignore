@@ -1,0 +1,6 @@
+data/store.json
+*.log
+node_modules/
+.tools/
+*.zip
+.DS_Store
